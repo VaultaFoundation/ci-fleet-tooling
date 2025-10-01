@@ -1,16 +1,21 @@
 FROM archlinux AS builder
 COPY files/ /
-RUN pacman -Syyu --noconfirm
+RUN pacman-key --init
+RUN pacman -Syy --noconfirm archlinux-keyring
+RUN pacman -Syu --noconfirm
 RUN pacman --noconfirm -S docker \
                           docker-buildx \
                           git \
                           jq \
                           linux \
-                          mkinitcpio
+                          mdadm \
+                          mkinitcpio \
+                          xfsprogs
 
-RUN systemctl enable gcpnetwork.service docker.service runner.service limit.timer
+RUN systemctl enable gcpnetwork.service docker.service runner.service limit.timer localmount.service
 RUN systemctl disable systemd-networkd systemd-timesyncd systemd-resolved
 RUN useradd -m enf -G docker
+RUN echo root:root | chpasswd
 
 FROM archlinux AS buildfs
 ARG ROOT_PART_SIZE

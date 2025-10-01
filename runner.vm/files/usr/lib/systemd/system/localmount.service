@@ -1,0 +1,13 @@
+[Unit]
+Before=docker.service
+OnFailure=poweroff.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/localmount.sh
+RemainAfterExit=yes
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target
